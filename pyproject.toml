@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "incr-eta"
+version = "0.1.0"
+description = "ETA with incremental training"
+authors = ["Clouds"]
+license = "BSD"
+
+[[tool.poetry.source]]
+name = "tuna"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+Flask = "^2.0.3"
+river = "^0.10.1"
+scikit-learn = "^1.0.2"
+gunicorn = "^20.1.0"
+
+[tool.poetry.dev-dependencies]
+ipython = "^8.0.1"
+ptpython = "^3.0.20"
+pudb = "^2022.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
