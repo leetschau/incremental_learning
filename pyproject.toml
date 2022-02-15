@@ -1,26 +1,30 @@
-[tool.poetry]
+[tool.pdm]
+includes = []
+[tool.pdm.dev-dependencies]
+dev = [
+    "ipython<9.0.0,>=8.0.1",
+    "ptpython<4.0.0,>=3.0.20",
+    "pudb<2023.0,>=2022.1",
+]
+
+[[tool.pdm.source]]
+name = "tuna"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+verify_ssl = true
+[build-system]
+requires = ["pdm-pep517"]
+build-backend = "pdm.pep517.api"
+
+[project]
 name = "incr-eta"
 version = "0.1.0"
 description = "ETA with incremental training"
-authors = ["Clouds"]
-license = "BSD"
+authors = [
+    {name = "Leo", email = "cli4168@hillstonenet.com"},
+]
+dependencies = ["Flask<3.0.0,>=2.0.3", "river<1.0.0,>=0.10.1", "scikit-learn<2.0.0,>=1.0.2", "gunicorn<21.0.0,>=20.1.0"]
+requires-python = ">=3.9,<3.10"
+license = {text = "BSD"}
 
-[[tool.poetry.source]]
-name = "tuna"
-url = "https://pypi.tuna.tsinghua.edu.cn/simple"
-
-[tool.poetry.dependencies]
-python = "^3.9"
-Flask = "^2.0.3"
-river = "^0.10.1"
-scikit-learn = "^1.0.2"
-gunicorn = "^20.1.0"
-
-[tool.poetry.dev-dependencies]
-ipython = "^8.0.1"
-ptpython = "^3.0.20"
-pudb = "^2022.1"
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+[project.urls]
+homepage = ""
