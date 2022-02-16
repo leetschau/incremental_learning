@@ -22,7 +22,14 @@ description = "ETA with incremental training"
 authors = [
     {name = "Leo", email = "cli4168@hillstonenet.com"},
 ]
-dependencies = ["Flask<3.0.0,>=2.0.3", "river<1.0.0,>=0.10.1", "scikit-learn<2.0.0,>=1.0.2", "gunicorn<21.0.0,>=20.1.0"]
+dependencies = [
+    "Flask<3.0.0,>=2.0.3",
+    "river<1.0.0,>=0.10.1",
+    "scikit-learn<2.0.0,>=1.0.2",
+    "gunicorn<21.0.0,>=20.1.0",
+    "requests>=2.27.1",
+    "tqdm>=4.62.3",
+]
 requires-python = ">=3.9,<3.10"
 license = {text = "BSD"}
 

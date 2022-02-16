@@ -1,4 +1,9 @@
 .env/
 __pycache__/
-.pdm.toml
 __pypackages__/
+.pdm.toml
+*.csv
+*.bak
+*.dat
+*.dir
+*.pkl
