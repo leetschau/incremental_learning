@@ -18,3 +18,16 @@ After build the demo dataset, you can modify the dataset size by `DATA_FRAC` in 
 1. Client requests: `pdm run python data-sender.py`.
 
 Model and relative metadata are saved in a shelve database defined in server.py.
+
+# Concept Drift Demo
+
+Create dataset:
+```
+java -Xmx40g -cp /cyberange/apps/moa-release-2021.07.0/lib/moa.jar \
+  -javaagent:/cyberange/apps/moa-release-2021.07.0/lib/sizeofag-1.0.4.jar \
+  moa.DoTask 'WriteStreamToARFFFile \
+  -s (generators.HyperplaneGenerator -k 10 -t 0.001 -s 10) -f concept_drift.arff -m 100000'
+```
+
+Get stream classifier accuracy: `pdm run python concept_drift.py`.
+
