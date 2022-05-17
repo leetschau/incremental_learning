@@ -14,6 +14,9 @@ river_raw_out=$base_dir/river_out.log
 river_metrics=$base_dir/river_metrics.csv
 river_script=$base_dir/river_script.py
 
+ddm_river_script=$base_dir/ddm_river.py
+ddm_moa=$base_dir/ddm_moa.csv
+
 plot_file=$base_dir/compare_acc.gp
 errfile=$base_dir/err.log
 
@@ -52,7 +55,8 @@ echo -e "Batch Accuracy records saved to $batch_out\n"
 
 
 echo -e "Evaluate accuracy of MOA incremental model ...\n"
-$moa "EvaluatePrequential -s (ArffFileStream -f $full) -i $inst_no -f $((inst_no / unit_no))" > $incr_out 2> $errfile
+$moa "EvaluateInterleavedTestThenTrain -l trees.HoeffdingTree -s (ArffFileStream -f $full) \
+    -i $inst_no -f $((inst_no / unit_no))" > $incr_out 2> $errfile
 
 
 echo -e "Evaluate accuracy of River incremental model ...\n"
@@ -70,11 +74,39 @@ EOF
 pdm run python $river_script
 cat $river_raw_out | tr -d , | awk '{print substr($1, 2, length($1)-2)", " substr($3, 1, length($3)-1)}' > $river_metrics
 
-echo -e "Compare accuracy for batch model, MOA imcremental model, and River incremental model:"
+
+echo -e "Compare accuracy for batch model, MOA imcremental model, and River incremental model:\n"
 cat << EOF > $plot_file
-plot "$batch_out" using 1:2 with lines title "Batch Model", \
-     "$incr_out" using 1:5 with lines title "Incremental Model", \
-     "$river_metrics" using 1:2 with lines title "River Model"
+plot "$batch_out" using 1:2 with linespoints title "Batch Model", \
+     "$incr_out" using 1:5 with lines title "MOA Incremental Model", \
+     "$river_metrics" using 1:2 with lines title "River Incremental Model"
 EOF
 
 gnuplot -p $plot_file 2> /dev/null
+
+
+echo -e "Drift Detection with MOA:\n"
+$moa "EvaluateInterleavedTestThenTrain \
+    -l (drift.SingleClassifierDrift -d EDDM -l trees.HoeffdingTree) \
+    -s (ArffFileStream -f $full) \
+    -i $inst_no -f $((inst_no / unit_no))" > $ddm_moa 2>$errfile
+
+
+echo -e "Drift Detection with River:\n"
+cat << EOF > $ddm_river_script
+from river import stream, drift, tree, metrics
+
+inp = stream.iter_arff("$full", target='class')
+model = tree.HoeffdingTreeClassifier()
+ddm = drift.EDDM()
+
+for i, (xi, yi) in enumerate(inp):
+    y_pred = model.predict_one(xi)
+    model.learn_one(xi, yi)
+    in_drift, in_warning = ddm.update(0 if y_pred == yi else 1)
+    if in_drift:
+        print(f'Change detected at index {i}')
+EOF
+
+pdm run python $ddm_river_script
+
